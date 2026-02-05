@@ -1,320 +1,473 @@
+import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { ServiceCard } from "@/components/ServiceCard";
-import { BookingForm } from "@/components/BookingForm";
-import { useServices } from "@/hooks/use-services";
-import { useReviews } from "@/hooks/use-reviews";
+import { 
+  Phone, 
+  Instagram, 
+  Facebook, 
+  Clock, 
+  MapPin, 
+  Star, 
+  MessageCircle,
+  Menu,
+  X,
+  ChevronRight
+} from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone, Star, MessageCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-// Animation variants
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
+const SERVICES = [
+  {
+    id: 1,
+    name: "Luxury Braids",
+    category: "Braiding",
+    description: "Intricate, neat, and long-lasting box braids, knotless braids, and cornrows.",
+    price: "From R450",
+    image: "/images/service-braids.jpg"
+  },
+  {
+    id: 2,
+    name: "Premium Weaves",
+    category: "Weaves",
+    description: "Seamless sew-ins and closures using high-quality human hair bundles.",
+    price: "From R800",
+    image: "/images/service-weaves.jpg"
+  },
+  {
+    id: 3,
+    name: "Custom Wigs",
+    category: "Wigs",
+    description: "Hand-made, customized wig units including installation and styling.",
+    price: "From R1200",
+    image: "/images/service-wigs.jpg"
+  },
+  {
+    id: 4,
+    name: "Deep Treatment",
+    category: "Treatment",
+    description: "Restorative wash, deep conditioning, and scalp massage for healthy growth.",
+    price: "From R250",
+    image: "/images/service-treatment.jpg"
+  },
+  {
+    id: 5,
+    name: "Bridal Styling",
+    category: "Styling",
+    description: "Elegant up-dos and styling for weddings and special occasions.",
+    price: "From R650",
+    image: "/images/service-styling.jpg"
   }
-};
+];
+
+const REVIEWS = [
+  {
+    id: 1,
+    name: "Thando M.",
+    rating: 5,
+    comment: "Absolutely stunning service! Yvonne is a magician with braids. My hair has never looked this good.",
+    date: "2 weeks ago"
+  },
+  {
+    id: 2,
+    name: "Jessica P.",
+    rating: 5,
+    comment: "The most professional salon in Nomzamo. The atmosphere is so relaxing and premium.",
+    date: "1 month ago"
+  },
+  {
+    id: 3,
+    name: "Lerato K.",
+    rating: 5,
+    comment: "Worth every cent. I felt like a queen leaving the salon. The rose gold interior is beautiful!",
+    date: "3 weeks ago"
+  }
+];
 
 export default function Home() {
-  const { data: services, isLoading: isLoadingServices } = useServices();
-  const { data: reviews } = useReviews();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Group services by category if needed, or just display them
-  const featuredServices = services || [];
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 80;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+    setIsMenuOpen(false);
+  };
 
   return (
-    <div className="min-h-screen bg-background font-body text-foreground overflow-x-hidden">
-      <Navbar />
+    <div className="min-h-screen bg-[#FDFBF7] text-[#1A1A1A] font-sans selection:bg-[#B76E79]/20">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-[#FDFBF7]/80 backdrop-blur-md border-b border-[#E6D2C4]/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex-shrink-0 flex items-center">
+              <span className="text-2xl font-serif font-bold tracking-tight text-[#1A1A1A]">
+                YVONNE <span className="text-[#B76E79]">HAIR</span>
+              </span>
+            </div>
+            
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-8">
+                {["Home", "Services", "About", "Reviews", "Contact"].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => scrollToSection(item.toLowerCase())}
+                    className="text-sm font-medium hover:text-[#B76E79] transition-colors"
+                  >
+                    {item}
+                  </button>
+                ))}
+                <Button 
+                  onClick={() => window.open('https://wa.me/27676578757', '_blank')}
+                  className="bg-[#B76E79] hover:bg-[#A65D68] text-white rounded-full px-6"
+                >
+                  Book Now
+                </Button>
+              </div>
+            </div>
 
-      {/* HERO SECTION */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          {/* Using Unsplash image for luxury salon interior */}
-          {/* descriptive comment: Luxury modern salon interior with soft lighting and elegant decor */}
-          <img 
-            src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=2036&auto=format&fit=crop" 
-            alt="Luxury Salon Interior" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="md:hidden">
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
+                {isMenuOpen ? <X /> : <Menu />}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="container relative z-10 px-4 md:px-6 text-center text-white mt-16">
-          <motion.span 
-            initial={{ opacity: 0, y: 10 }}
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-sm font-medium tracking-widest uppercase mb-6"
+            className="md:hidden bg-[#FDFBF7] border-b border-[#E6D2C4]/30 px-4 pt-2 pb-6 space-y-2"
           >
-            Nomzamo's Premier Luxury Salon
-          </motion.span>
-          
-          <motion.h1 
+            {["Home", "Services", "About", "Reviews", "Contact"].map((item) => (
+              <button
+                key={item}
+                onClick={() => scrollToSection(item.toLowerCase())}
+                className="block w-full text-left px-3 py-2 text-base font-medium"
+              >
+                {item}
+              </button>
+            ))}
+            <Button 
+              onClick={() => window.open('https://wa.me/27676578757', '_blank')}
+              className="w-full bg-[#B76E79] text-white mt-4"
+            >
+              Book Now
+            </Button>
+          </motion.div>
+        )}
+      </nav>
+
+      {/* Hero Section */}
+      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/images/hero-salon.jpg" 
+            alt="Luxury Salon" 
+            className="w-full h-full object-cover brightness-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#FDFBF7]" />
+        </div>
+
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
+            transition={{ duration: 0.8 }}
           >
-            Where Beauty <br />
-            <span className="text-primary italic">Begins</span>
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed font-light"
-          >
-            Experience world-class hair styling, treatments, and beauty care tailored to enhance your confidence and natural elegance.
-          </motion.p>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Button 
-              className="w-full sm:w-auto min-w-[180px] h-14 rounded-full bg-primary hover:bg-primary/90 text-white text-lg font-medium shadow-xl shadow-primary/30 transition-all hover:scale-105"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              Book Appointment
-            </Button>
-            <a href="tel:0676578757" className="w-full sm:w-auto">
+            <Badge className="mb-6 bg-[#B76E79]/20 text-[#B76E79] border-[#B76E79]/30 backdrop-blur-sm px-4 py-1 rounded-full uppercase tracking-widest text-xs">
+              Luxury Hair Experience
+            </Badge>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-6 leading-tight">
+              Where Beauty <span className="italic">Begins</span>
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+              Step into a world of elegance and African luxury. Nomzamo's premier destination for confidence-boosting hair transformations.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
-                variant="outline" 
-                className="w-full sm:w-auto min-w-[180px] h-14 rounded-full border-white/30 text-white bg-white/5 backdrop-blur-sm hover:bg-white hover:text-black text-lg font-medium transition-all"
+                size="lg"
+                onClick={() => window.open('https://wa.me/27676578757', '_blank')}
+                className="bg-[#B76E79] hover:bg-[#A65D68] text-white text-lg px-10 h-14 rounded-full shadow-lg"
+              >
+                Book Appointment
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                onClick={() => window.location.href = 'tel:0676578757'}
+                className="bg-white/10 hover:bg-white/20 text-white border-white/30 text-lg px-10 h-14 rounded-full backdrop-blur-sm shadow-lg"
               >
                 Call Now
               </Button>
-            </a>
+            </div>
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
+        
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/50"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50"
         >
-          <span className="text-xs uppercase tracking-widest">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-white/0 via-white/50 to-white/0" />
+          <div className="w-[1px] h-12 bg-gradient-to-b from-white to-transparent mx-auto" />
         </motion.div>
       </section>
 
-      {/* ABOUT SECTION */}
-      <section id="about" className="py-24 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-secondary/20 skew-x-12 transform origin-top-right -z-10" />
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <motion.div 
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+      {/* Services Section */}
+      <section id="services" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">Our Services</h2>
+          <div className="w-24 h-1 bg-[#B76E79] mx-auto mb-6 rounded-full" />
+          <p className="text-[#1A1A1A]/60 max-w-2xl mx-auto text-lg">
+            Experience the finest in hair care and styling, tailored specifically for you.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {SERVICES.map((service, index) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="lg:w-1/2 relative"
             >
-              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl">
-                {/* descriptive comment: Close up portrait of beautiful african woman with intricate braids */}
-                <img 
-                  src="https://images.unsplash.com/photo-1584297091622-af8e55da216b?q=80&w=1000&auto=format&fit=crop" 
-                  alt="Beautiful Styling" 
-                  className="w-full h-auto object-cover"
-                />
+              <Card className="overflow-hidden border-none bg-white shadow-sm hover:shadow-xl transition-all duration-300 group rounded-2xl">
+                <div className="relative h-72 overflow-hidden">
+                  <img 
+                    src={service.image} 
+                    alt={service.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                  <div className="absolute bottom-4 left-4">
+                    <Badge className="bg-white/90 text-[#1A1A1A] backdrop-blur-sm">
+                      {service.category}
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-8">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-2xl font-serif font-bold">{service.name}</h3>
+                    <span className="text-[#B76E79] font-bold text-lg">{service.price}</span>
+                  </div>
+                  <p className="text-[#1A1A1A]/60 leading-relaxed mb-6">
+                    {service.description}
+                  </p>
+                  <Button 
+                    variant="ghost" 
+                    className="p-0 hover:bg-transparent text-[#B76E79] group flex items-center"
+                    onClick={() => window.open('https://wa.me/27676578757', '_blank')}
+                  >
+                    Learn More <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-24 bg-[#E6D2C4]/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+                <img src="/images/hero-salon.jpg" alt="Salon Interior" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -bottom-8 -right-8 w-2/3 h-2/3 border-2 border-primary/30 rounded-[3rem] -z-10" />
-              <div className="absolute -top-8 -left-8 w-32 h-32 bg-secondary rounded-full blur-3xl -z-10" />
+              <div className="absolute -bottom-10 -right-10 w-64 h-64 rounded-2xl overflow-hidden shadow-2xl hidden md:block border-8 border-[#FDFBF7]">
+                <img src="/images/service-styling.jpg" alt="Styling" className="w-full h-full object-cover" />
+              </div>
             </motion.div>
             
-            <motion.div 
-              initial={{ opacity: 0, x: 50 }}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="lg:w-1/2"
             >
-              <span className="text-primary font-bold tracking-wider uppercase text-sm mb-4 block">About Yvonne</span>
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">Redefining African <br />Luxury & Elegance</h2>
-              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-                At Yvonne Hair Salon, we believe your hair is your crowning glory. Located in the heart of Nomzamo, we bring high-end salon experiences to our community. 
-                Our expert stylists specialize in protective styling, modern wigs, and hair health, ensuring you leave not just looking beautiful, but feeling empowered.
-              </p>
-              
-              <div className="grid grid-cols-2 gap-8 mb-10">
-                <div>
-                  <h4 className="font-display text-3xl font-bold text-foreground mb-1">5+</h4>
-                  <p className="text-sm text-muted-foreground">Years Experience</p>
-                </div>
-                <div>
-                  <h4 className="font-display text-3xl font-bold text-foreground mb-1">1k+</h4>
-                  <p className="text-sm text-muted-foreground">Happy Clients</p>
-                </div>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-8">Elevating Beauty in <span className="text-[#B76E79]">Nomzamo</span></h2>
+              <div className="space-y-6 text-lg text-[#1A1A1A]/70 font-light leading-relaxed">
+                <p>
+                  Yvonne Hair Salon is more than just a styling destination; it's a sanctuary where African heritage meets modern luxury. Located in the heart of Nomzamo, Cape Town, we pride ourselves on delivering exceptional hair care that boosts your confidence.
+                </p>
+                <p>
+                  Our expert stylists are dedicated to the art of hair, specializing in everything from traditional braiding to the latest in wig customization and restorative treatments. We use only premium products to ensure your hair remains healthy, vibrant, and beautiful.
+                </p>
               </div>
-
-              <div className="flex gap-4">
-                <Button variant="outline" className="rounded-full px-8 border-foreground/10 hover:bg-foreground hover:text-white transition-colors">
-                  Read Our Story
-                </Button>
+              <div className="mt-12 grid grid-cols-3 gap-8">
+                <div>
+                  <div className="text-3xl font-serif font-bold text-[#B76E79]">10+</div>
+                  <div className="text-sm text-[#1A1A1A]/50 uppercase tracking-wider">Years Experience</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-serif font-bold text-[#B76E79]">5k+</div>
+                  <div className="text-sm text-[#1A1A1A]/50 uppercase tracking-wider">Happy Clients</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-serif font-bold text-[#B76E79]">100%</div>
+                  <div className="text-sm text-[#1A1A1A]/50 uppercase tracking-wider">Satisfaction</div>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
-      <section id="services" className="py-24 bg-secondary/30 relative">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-primary font-bold tracking-wider uppercase text-sm mb-4 block">Our Expertise</span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">Premium Services</h2>
-            <p className="text-muted-foreground">From intricate braiding to custom wigs, explore our range of professional hair services designed for the modern woman.</p>
+      {/* Reviews Section */}
+      <section id="reviews" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">Client Love</h2>
+          <div className="flex justify-center items-center gap-2 mb-6 text-[#B76E79]">
+            {[...Array(5)].map((_, i) => <Star key={i} className="fill-current w-6 h-6" />)}
+            <span className="text-[#1A1A1A] font-bold ml-2">5.0 (9 Reviews)</span>
           </div>
+          <p className="text-[#1A1A1A]/60 max-w-2xl mx-auto text-lg italic font-light">
+            "Your hair is the crown you never take off. We make sure it shines."
+          </p>
+        </div>
 
-          {isLoadingServices ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredServices.map((service, index) => (
-                <ServiceCard key={service.id} service={service} index={index} />
-              ))}
-            </div>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {REVIEWS.map((review, index) => (
+            <motion.div
+              key={review.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Card className="h-full border border-[#E6D2C4]/30 bg-white/50 backdrop-blur-sm p-8 rounded-2xl hover:bg-white transition-colors">
+                <div className="flex gap-1 text-[#B76E79] mb-6">
+                  {[...Array(review.rating)].map((_, i) => <Star key={i} className="fill-current w-4 h-4" />)}
+                </div>
+                <p className="text-lg text-[#1A1A1A]/80 mb-8 font-light italic leading-relaxed">
+                  "{review.comment}"
+                </p>
+                <div className="mt-auto pt-6 border-t border-[#E6D2C4]/20 flex justify-between items-center">
+                  <span className="font-bold">{review.name}</span>
+                  <span className="text-sm text-[#1A1A1A]/40">{review.date}</span>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* REVIEWS SECTION */}
-      <section className="py-24 bg-foreground text-white overflow-hidden relative">
-        {/* Background decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-primary blur-[100px]" />
-          <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-blue-500 blur-[120px]" />
-        </div>
-
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+      {/* Contact Section */}
+      <section id="contact" className="py-24 bg-[#1A1A1A] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
-              <span className="text-primary font-bold tracking-wider uppercase text-sm mb-4 block">Testimonials</span>
-              <h2 className="font-display text-4xl md:text-5xl font-bold">Client Love</h2>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/10">
-              <div className="flex gap-1 text-yellow-400">
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-              </div>
-              <span className="font-medium ml-2">5.0 Rating</span>
-              <span className="text-white/50 text-sm">(9 Reviews)</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reviews?.slice(0, 3).map((review, i) => (
-              <motion.div
-                key={review.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-colors"
-              >
-                <div className="flex gap-1 text-primary mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" />
-                  ))}
-                </div>
-                <p className="text-white/80 leading-relaxed mb-6 italic">"{review.comment}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center font-bold text-white">
-                    {review.name.charAt(0)}
+              <h2 className="text-4xl font-serif font-bold mb-12">Visit Our <span className="text-[#B76E79]">Sanctuary</span></h2>
+              <div className="space-y-10">
+                <div className="flex items-start gap-6 group">
+                  <div className="w-12 h-12 rounded-full bg-[#B76E79]/10 flex items-center justify-center text-[#B76E79] group-hover:bg-[#B76E79] group-hover:text-white transition-colors duration-300">
+                    <MapPin />
                   </div>
                   <div>
-                    <h4 className="font-medium">{review.name}</h4>
-                    <span className="text-xs text-white/40">{review.date}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT & BOOKING SECTION */}
-      <section id="contact" className="py-24 relative">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <span className="text-primary font-bold tracking-wider uppercase text-sm mb-4 block">Get in Touch</span>
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">Ready for your transformation?</h2>
-              <p className="text-muted-foreground text-lg mb-8">
-                Whether you know exactly what you want or need a consultation, we're here to help you look your absolute best.
-              </p>
-
-              <div className="space-y-6 mb-10">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg">Call Us</h4>
-                    <p className="text-muted-foreground mb-1">Mon-Sat from 9am to 7pm</p>
-                    <a href="tel:0676578757" className="text-xl font-display font-bold hover:text-primary transition-colors">067 657 8757</a>
+                    <h4 className="text-xl font-bold mb-2">Location</h4>
+                    <p className="text-white/60 font-light text-lg">12 Michael St, Nomzamo, Cape Town, 7140</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0">
-                    <MessageCircle className="w-5 h-5" />
+                <div className="flex items-start gap-6 group">
+                  <div className="w-12 h-12 rounded-full bg-[#B76E79]/10 flex items-center justify-center text-[#B76E79] group-hover:bg-[#B76E79] group-hover:text-white transition-colors duration-300">
+                    <Phone />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg">WhatsApp Us</h4>
-                    <p className="text-muted-foreground mb-1">Quick responses for bookings</p>
-                    <a 
-                      href="https://wa.me/27676578757" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-xl font-display font-bold hover:text-primary transition-colors"
-                    >
-                      Chat on WhatsApp
-                    </a>
+                    <h4 className="text-xl font-bold mb-2">Call Us</h4>
+                    <p className="text-white/60 font-light text-lg">067 657 8757</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-6 group">
+                  <div className="w-12 h-12 rounded-full bg-[#B76E79]/10 flex items-center justify-center text-[#B76E79] group-hover:bg-[#B76E79] group-hover:text-white transition-colors duration-300">
+                    <Clock />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold mb-2">Hours</h4>
+                    <p className="text-white/60 font-light text-lg">Mon - Sat: 8:00 AM - 7:00 PM</p>
+                    <p className="text-white/60 font-light text-lg">Sun: Closed</p>
                   </div>
                 </div>
               </div>
+
+              <div className="mt-12 flex gap-4">
+                <Button 
+                  size="icon" 
+                  variant="outline" 
+                  className="rounded-full border-white/20 hover:bg-[#B76E79] hover:border-[#B76E79]"
+                >
+                  <Instagram className="w-5 h-5" />
+                </Button>
+                <Button 
+                  size="icon" 
+                  variant="outline" 
+                  className="rounded-full border-white/20 hover:bg-[#B76E79] hover:border-[#B76E79]"
+                >
+                  <Facebook className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
 
-            <BookingForm />
+            <div className="h-[500px] rounded-2xl overflow-hidden shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 ring-1 ring-white/10">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3305.619253483034!2d18.868739176313174!3d-34.1206660731301!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dcc0288863f847f%3A0xcf7f2b3e8e7a688b!2s12%20Michael%20St%2C%20Nomzamo%2C%20Cape%20Town%2C%207140!5e0!3m2!1sen!2sza!4v1700000000000!5m2!1sen!2sza" 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen={true} 
+                loading="lazy"
+              ></iframe>
+            </div>
           </div>
         </div>
       </section>
 
-      <Footer />
+      {/* Footer */}
+      <footer className="py-12 bg-black text-white/30 text-center border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4">
+          <p className="text-sm uppercase tracking-widest font-medium mb-4">Yvonne Hair Salon &copy; {new Date().getFullYear()}</p>
+          <p className="text-xs font-light">Crafted for Elegance, Beauty, and Confidence.</p>
+        </div>
+      </footer>
 
-      {/* Sticky WhatsApp Button */}
-      <a
-        href="https://wa.me/27676578757"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 flex items-center gap-2 group"
-      >
-        <MessageCircle className="w-6 h-6" />
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-medium whitespace-nowrap">
-          Book on WhatsApp
-        </span>
-      </a>
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-50">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => window.open('https://wa.me/27676578757', '_blank')}
+          className="w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center"
+        >
+          <MessageCircle className="w-7 h-7" />
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => window.location.href = 'tel:0676578757'}
+          className="md:hidden w-14 h-14 bg-[#B76E79] text-white rounded-full shadow-2xl flex items-center justify-center"
+        >
+          <Phone className="w-6 h-6" />
+        </motion.button>
+      </div>
     </div>
   );
 }
